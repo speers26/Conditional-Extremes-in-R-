@@ -1,0 +1,246 @@
+#
+# Script containing functions for selecting threshold for H&T (2004)
+#
+
+# conflict resolutions ----------------------------------------------------
+pfrechet <- evd::pfrechet
+qfrechet <- evd::qfrechet
+dfrechet <- evd::dfrechet
+rfrechet <- evd::rfrechet
+
+
+# functions ---------------------------------------------------------------
+
+mlt_ht_thrsh_vldtn = function(sample, qrange, theta0, sig=0.05, k_min=10){
+  #' uses difference metric idea to check independence of X-u and Z, thus checking
+  #' the suitability of qu as a threshold quantile
+  #' does this for a range of quantiles, using an adaptive number of bands at each
+  #' stage
+  #'
+  #' @param sample matrix of two columns containing sample data
+  #' @param qrange candidate threshold quantiles for conditioning variable
+  #' @param theta0 vector of initial H&T parameter values to be used in optimisation
+  #' @param sig float level of sigficance to test against
+  #' @param k_min int min number of points acceptable in each band
+  #'
+  #' @returns no value is returned
+  #' @export
+  pvalues=c()
+  X = sample[,1] ; Y=sample[,1]
+
+  N = length(X)
+  k_seq = c()
+  nbs = c()
+  for (i_q in 1:length(qrange)){
+    q = qrange[i_q]
+    print(q)
+
+    Ne = (1-q)*N
+    n_bands_max = 40
+    n_bands = min(n_bands_max,floor(Ne/k_min))
+    print(n_bands)
+    k = Ne%/%n_bands
+    k_seq[i_q] = k
+    nbs[i_q] = n_bands
+
+    cond_test = ht_thrsh_vldtn(sample, q, theta0, plots = F, sig = sig,n_bands=n_bands, k_min=k_min)
+    pvalues[i_q] = cond_test$p_value
+  }
+
+  plot(qrange, k_seq, pch=4, xlab="number in each band", ylab="quantile")
+  lines(qrange, k_seq, col="blue")
+
+  plot(qrange, pvalues, pch=4)
+  abline(h=0.05, col="red")
+  for (i_q in 1:length(qrange)){
+    text(qrange[i_q], pvalues[i_q]+0.02, paste(nbs[i_q]))
+  }
+
+}
+
+
+ht_thrsh_vldtn = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5){
+  #' uses difference metric idea to check independence of X-u and Z, thus checking
+  #' the suitability of qu as a threshold quantile
+  #'
+  #' @param sample matrix of two columns containing sample data
+  #' @param qu candidate threshold quantile for conditioning variable
+  #' @param theta0 vector of initial H&T parameter values to be used in optimisation
+  #' @param n_bands integer number of bands to split data into
+  #' @param sig float level of sigficance to test against
+  #' @param plots bool, true to show diagnostic plots
+  #' @param k_min int min number of points acceptable in each band
+  #'
+  #'@returns list of resulting p-value boolean decision of accept/reject
+  #'@export
+  XandZ = get_X_and_Z(sample, qu, theta0)
+
+  res_sample = matrix(nrow=length(XandZ$X), ncol=2)
+  res_sample[,1] = XandZ$X ; res_sample[,2] = XandZ$Z
+
+  bands = get_bands(res_sample, n_bands)
+
+  if (length(bands$bandsY[[1]])<k_min){
+    warning("too few elements in each band")
+  }
+
+  all_z = XandZ$Z
+  cdfs = get_ecdfs(bands$bandsY)
+  t_obs = get_t(cdfs, all_z)
+
+  k = 1000  # number of randomised bands
+  t_set = get_t_set(all_z, n_bands, k)
+
+  alpha = sig  # significance level of hypothesis test
+  t_sig = quantile(t_set, 1- alpha)
+
+  if(plots){
+    par(mfrow=c(3,1))
+    plot(XandZ$X, XandZ$Z, pch=16, xlab="X-u", ylab="Z", ylim=c(-10, 10))
+    for (i in 1:n_bands){
+      points(bands$bandsX[[i]], bands$bandsY[[i]], col=i+10, pch=16, cex=0.5)
+      abline(v=max(bands$bandsX[[i]]), lwd=4, col="purple")
+    }
+
+    plot(ecdf(bands$bandsY[[1]]),main="", cex=0.5, xlim=c(-10,10), xlab="Z", ylab="empirical cdf", col=11)
+    for (i in 2:n_bands){
+      lines(ecdf(bands$bandsY[[i]]),main="",col=i+10, cex=0.5, xlab="Z", ylab="empirical cdf")
+    }
+
+    hist(t_set, xlim=c(min(t_set), max(max(t_set), t_obs)))
+    abline(v=t_sig, col="red", lwd=2)
+    abline(v=t_obs, col="blue", lwd=2)
+    par(mfrow=c(1,1))
+  }
+
+  decision = as.numeric((t_sig[1] > t_obs))
+  p_value = sum(t_set>t_obs)/k
+
+  return(list(p_value=p_value, decision=decision))
+
+}
+
+
+# internal functions ------------------------------------------------------
+
+
+get_X_and_Z = function(sample, qu, theta0){
+  #' get sorted X-u and Z for a given sample & fit conditions
+  #'@keywords internal
+  sample_x = sample[,1] ; sample_y = sample[,2]
+
+  qu_fit = ht_fit(sample_x, sample_y, qu, keef=T, theta0=theta0, plot=F)
+
+  u = quantile(sample_x, qu)
+  excess_x = sample_x[sample_x>=u] - u
+
+  s_excess_x = sort(excess_x)
+  s_res = c()
+
+  for (i in 1:length(s_excess_x)){
+    s_res[i] = qu_fit$res[excess_x==s_excess_x[i]]
+  }
+
+  return(list(X=s_excess_x, Z=s_res))
+
+}
+
+get_bands = function(sample, n_bands){
+  #' split Y into given number of bands by X values and plots bands
+  #'@keywords internal
+  X = sample[,1] ; Y = sample[,2]
+
+  bands_X = eq_split(X, n_bands)$chunks
+  bands_Y = eq_split(Y, n_bands)$chunks
+
+  return(list(bandsX = bands_X, bandsY=bands_Y))
+
+}
+
+eq_split = function(X, n){
+  #' splits a vector into n equal chunks (with overlap if necessary)
+  #'@keywords internal
+  k = length(X) %/% n
+  X_overflow = X[(k*n+1): length(X)]
+
+  chunks = list()
+  for (i in 1:n){
+    chunks[[i]] = X[(1+ (i-1)*k): (i*k)]
+  }
+  return(list(chunks=chunks, overflow=X_overflow))
+}
+
+get_ecdfs = function(bands){
+  #' get ecdfs given bands
+  #'@keywords internal
+  n_bands = length(bands)
+
+  emp_cdfs = list(knots(ecdf(bands[[1]])))
+
+  for (i in 2:n_bands){
+    emp_cdfs = list.append(emp_cdfs, knots(ecdf(bands[[i]])))
+  }
+
+  return(emp_cdfs)
+
+}
+
+get_quantiles = function(bands){
+  #' get quantiles given bands
+  #'@keywords internal
+  n_bands = length(bands)
+
+  q = seq(0.01, 0.99, length = 100)
+
+  quants = list(quantile(bands[[1]], q))
+
+  for (i in 2:n_bands){
+    quants = list.append(quants, quantile(bands[[i]], q))
+  }
+
+  return(quants)
+
+}
+
+get_t = function(cdfs, all_z){
+  #' get test statistic t from quantiles and all residuals
+  #'@keywords internal
+  q = seq(0.01, 0.99, length = 100)
+
+  max_diffs = c()
+  n_bands = length(cdfs)
+
+  for (i in 1:n_bands){
+    diffs = c()
+    for (j in 1:n_bands){
+      diffs[j] = max(abs(cdfs[[i]] - cdfs[[j]]))
+    }
+    max_diffs[i] = max(diffs)
+
+  }
+
+  t = max(max_diffs)
+
+  return(t)
+
+}
+
+get_t_set = function(all_z, n_bands, k){
+  #'@keywords internal
+  t = c()
+
+  for (i in 1:k){
+
+    all_z_i = sample(all_z, length(all_z), replace=F)
+    bands_i = split(all_z_i, factor(sort(rank(all_z_i)%%n_bands)))
+
+    quants_i = get_quantiles(bands_i)
+    t_i = get_t(quants_i, all_z_i)
+
+    t[i] = t_i
+
+  }
+
+  return(t)
+
+}
