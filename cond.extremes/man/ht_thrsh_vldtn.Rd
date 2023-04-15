@@ -12,7 +12,8 @@ ht_thrsh_vldtn(
   n_bands = 5,
   sig = 0.05,
   plots = T,
-  k_min = 5
+  k_min = 5,
+  nr = 1000
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ ht_thrsh_vldtn(
 \item{plots}{bool, true to show diagnostic plots}
 
 \item{k_min}{int min number of points acceptable in each band}
+
+\item{nr}{int number of randomised bands}
 }
 \value{
 list of resulting p-value boolean decision of accept/reject

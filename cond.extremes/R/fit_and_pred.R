@@ -11,19 +11,6 @@ rfrechet <- evd::rfrechet
 
 # functions ---------------------------------------------------------------
 
-log_sample_lap <- function(sample_n,alpha){
-  #' function which generates a bivariate sample with MEVD logistic dependence
-  #' structure and laplace margins
-  #'
-  #' @param sample_n an integer, size of sample to be generated
-  #' @param alpha floating point in [0,1], MEVD logistic dependence parameter
-  #'
-  #' @returns vector, sample with laplace margins and logistic dep structure
-  #' @export
-  sample <- rmvevd(sample_n,dep = alpha,d=2,model="log",mar=c(1,1,1)) ## with unit frechet margins
-  l_sample <- qlaplace(pfrechet(sample)) ## with laplace margins
-  return(l_sample)
-}
 
 ht_pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
   #' generates prediction points for a given H&T model

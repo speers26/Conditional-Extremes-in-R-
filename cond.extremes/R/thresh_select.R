@@ -8,8 +8,8 @@ qfrechet <- evd::qfrechet
 dfrechet <- evd::dfrechet
 rfrechet <- evd::rfrechet
 
-
 # functions ---------------------------------------------------------------
+
 
 mlt_ht_thrsh_vldtn = function(sample, qrange, theta0, sig=0.05, k_min=10){
   #' uses difference metric idea to check independence of X-u and Z, thus checking
@@ -38,11 +38,12 @@ mlt_ht_thrsh_vldtn = function(sample, qrange, theta0, sig=0.05, k_min=10){
     Ne = (1-q)*N
     n_bands_max = 40
     n_bands = min(n_bands_max,floor(Ne/k_min))
-    print(n_bands)
+
     k = Ne%/%n_bands
     k_seq[i_q] = k
     nbs[i_q] = n_bands
 
+    print(n_bands)
     cond_test = ht_thrsh_vldtn(sample, q, theta0, plots = F, sig = sig,n_bands=n_bands, k_min=k_min)
     pvalues[i_q] = cond_test$p_value
   }
@@ -59,7 +60,7 @@ mlt_ht_thrsh_vldtn = function(sample, qrange, theta0, sig=0.05, k_min=10){
 }
 
 
-ht_thrsh_vldtn = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5){
+ht_thrsh_vldtn = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5, nr=1000){
   #' uses difference metric idea to check independence of X-u and Z, thus checking
   #' the suitability of qu as a threshold quantile
   #'
@@ -70,6 +71,7 @@ ht_thrsh_vldtn = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_mi
   #' @param sig float level of sigficance to test against
   #' @param plots bool, true to show diagnostic plots
   #' @param k_min int min number of points acceptable in each band
+  #' @param nr int number of randomised bands
   #'
   #'@returns list of resulting p-value boolean decision of accept/reject
   #'@export
@@ -86,11 +88,9 @@ ht_thrsh_vldtn = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_mi
 
   all_z = XandZ$Z
   cdfs = get_ecdfs(bands$bandsY)
-  t_obs = get_t(cdfs, all_z)
+  t_obs = get_t(cdfs)
 
-  k = 1000  # number of randomised bands
-  t_set = get_t_set(all_z, n_bands, k)
-
+  t_set = get_t_set(all_z, n_bands, nr)
   alpha = sig  # significance level of hypothesis test
   t_sig = quantile(t_set, 1- alpha)
 
@@ -114,7 +114,7 @@ ht_thrsh_vldtn = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_mi
   }
 
   decision = as.numeric((t_sig[1] > t_obs))
-  p_value = sum(t_set>t_obs)/k
+  p_value = sum(t_set>t_obs)/nr
 
   return(list(p_value=p_value, decision=decision))
 
@@ -134,6 +134,7 @@ get_X_and_Z = function(sample, qu, theta0){
   u = quantile(sample_x, qu)
   excess_x = sample_x[sample_x>=u] - u
 
+  s_excess_x = excess_x
   s_excess_x = sort(excess_x)
   s_res = c()
 
@@ -185,27 +186,9 @@ get_ecdfs = function(bands){
 
 }
 
-get_quantiles = function(bands){
-  #' get quantiles given bands
-  #'@keywords internal
-  n_bands = length(bands)
-
-  q = seq(0.01, 0.99, length = 100)
-
-  quants = list(quantile(bands[[1]], q))
-
-  for (i in 2:n_bands){
-    quants = list.append(quants, quantile(bands[[i]], q))
-  }
-
-  return(quants)
-
-}
-
-get_t = function(cdfs, all_z){
+get_t = function(cdfs){
   #' get test statistic t from quantiles and all residuals
   #'@keywords internal
-  q = seq(0.01, 0.99, length = 100)
 
   max_diffs = c()
   n_bands = length(cdfs)
@@ -232,10 +215,9 @@ get_t_set = function(all_z, n_bands, k){
   for (i in 1:k){
 
     all_z_i = sample(all_z, length(all_z), replace=F)
-    bands_i = split(all_z_i, factor(sort(rank(all_z_i)%%n_bands)))
-
-    quants_i = get_quantiles(bands_i)
-    t_i = get_t(quants_i, all_z_i)
+    bands_i = eq_split(all_z_i, n_bands)$chunks
+    cdfs_i = get_ecdfs(bands_i)
+    t_i = get_t(cdfs_i)
 
     t[i] = t_i
 

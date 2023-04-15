@@ -4,7 +4,7 @@
 \alias{get_t}
 \title{get test statistic t from quantiles and all residuals}
 \usage{
-get_t(cdfs, all_z)
+get_t(cdfs)
 }
 \description{
 get test statistic t from quantiles and all residuals
