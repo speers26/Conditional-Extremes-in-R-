@@ -89,6 +89,30 @@ ht_fit = function(Yi, Ymnsi, qu, Y=T, keef=F, theta0, plot=T){
   return(list(theta=init_theta,res=residuals))
 }
 
+ht.par.boot = function(data, q, n.boot){
+  #' performs parametric bootstrap for ht (2004) model with keef (2013) constraints
+  #'
+  #' @param data 2 column matrix, data to fit initial model to
+  #' @param q threshold exceedance quantile to fit intial model above
+  #' @param n.boot number of parametric bootstraps to perform
+  #'
+  #' @returns list of parametric bootstrapped theta and residuals
+  #' @export
+  u = quantile(data[,1], q, names=F)
+  # fit initial model
+  fit.init = ht_fit(data[,1], data[,2], q, keef=T, plot=F, theta0=c(0,0,1))
+  # set up empty par vectrs
+  theta = list(); res = list()
+  for (i in 1:n.boot){
+    # predict points from initial fit
+    ht.pred = ht_pred(u, theta=fit.init$theta, Z=fit.init$res, plot=F, points=T, n_pred=length(data[,1]))
+    # fit to predicted points
+    fit.itr = ht_fit(ht.pred[,1], ht.pred[,2], 0, theta0=c(0,0,1), plot=F)
+    theta[[i]] = fit.itr$theta ; res[[i]] = fit.itr$res
+  }
+  return(list(theta=theta, res=res))
+}
+
 
 # internal functions ------------------------------------------------------
 ht_residualnLL <- function(Ymnsi, Yi, theta){
