@@ -15,4 +15,5 @@ Depends:
 	VGAM,
 	docstring,
 	rlist,
-	ismev
+	ismev,
+	energy

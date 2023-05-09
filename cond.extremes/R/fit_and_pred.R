@@ -99,13 +99,14 @@ ht.par.boot = function(data, q, n.boot){
   #' @returns list of parametric bootstrapped theta and residuals
   #' @export
   u = quantile(data[,1], q, names=F)
+  n.pred = floor(length(data[,1]) * 1/2*exp(-u))
   # fit initial model
   fit.init = ht_fit(data[,1], data[,2], q, keef=T, plot=F, theta0=c(0,0,1))
   # set up empty par vectrs
   theta = list(); res = list()
   for (i in 1:n.boot){
     # predict points from initial fit
-    ht.pred = ht_pred(u, theta=fit.init$theta, Z=fit.init$res, plot=F, points=T, n_pred=length(data[,1]))
+    ht.pred = ht_pred(u, theta=fit.init$theta, Z=fit.init$res, plot=F, points=T, n_pred=n.pred)
     # fit to predicted points
     fit.itr = ht_fit(ht.pred[,1], ht.pred[,2], 0, theta0=c(0,0,1), plot=F)
     theta[[i]] = fit.itr$theta ; res[[i]] = fit.itr$res

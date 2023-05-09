@@ -10,8 +10,62 @@ rfrechet <- evd::rfrechet
 
 # functions ---------------------------------------------------------------
 
+energy.thrsh.test = function(data, qt.range, n.boot, n.boot.par, n.rep){
+  #' conducts test of independence based on that of Wan (2019) to validate H&T
+  #' exceedance quantiles
+  #' @param data matrix of 2 columns containing to fit HT to
+  #' @param qt.range range of exceedance threshold quantiles to evaluate
+  #' @param n.boot size of bootstraps to take at each rep
+  #' @param n.boot.par size of boostrapped parameter samples to calculate at each rep
+  #' @param n.rep number of p value calculation reps per quantiles
+  #' @returns returns nothing
+  #' @export
+  #'
+  # set up empty arrays
+  pvs = matrix(data=0, ncol=length(qt.range), nrow=n.rep)
+  mean.pvs = c()
 
-mlt_ht_thrsh_vldtn = function(sample, qrange, theta0, sig=0.05, k_min=10){
+  # iterate over quantiles and reps
+  for (i in 1:length(qt.range)){
+    print(i)
+    for (j in 1:n.rep){
+      # get bootstrapped X and Y
+      rand.ind = sample(1:length(data[,1]), n.boot)
+      rand.X = data[,1][rand.ind]
+      rand.Y = data[,2][rand.ind]
+
+      # get bootstrapped ht parameters
+      par.boot = ht.par.boot(data=matrix(data=c(rand.X, rand.Y), ncol=2),
+                             q=qt.range[i], n.boot=n.boot.par)
+
+      # get excesses
+      u = quantile(rand.X, qt.range[i], names=F)
+      exs = rand.X[rand.X>u] - u
+
+      # get 'average' residuals
+      alpha.mean = mean(sapply(par.boot$theta, '[[', 1))
+      beta.mean = mean(sapply(par.boot$theta, '[[', 2))
+      res = (rand.Y[rand.X>u] - alpha.mean*exs) / exs^beta.mean
+
+      # do independence energy-test
+      test = indep.test(exs, res, R=1000)
+      pvs[j, i] = test$p.value
+    }
+  }
+  # find mean p values
+  mean.pvs = apply(pvs, 2, mean)
+
+  # plot mean p values
+  plot(rev(1-qt.range), rev(mean.pvs), main=paste(alpha), pch=2, col="red",
+       ylim=c(min(pvs), max(pvs)), xlab="qt", ylab="p-values")
+
+  # plot all p values
+  for (q in rev(1:length(qt.range))){
+    points(rep(1-qt.range[q], n.rep), pvs[, q], col="lightgrey")
+  }
+}
+
+tval.thrsh.test = function(sample, qrange, theta0, sig=0.05, k_min=10){
   #' uses difference metric idea to check independence of X-u and Z, thus checking
   #' the suitability of qu as a threshold quantile
   #' does this for a range of quantiles, using an adaptive number of bands at each
@@ -60,7 +114,7 @@ mlt_ht_thrsh_vldtn = function(sample, qrange, theta0, sig=0.05, k_min=10){
 }
 
 
-ht_thrsh_vldtn = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5, nr=1000){
+indv.thrsh.test = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5, nr=1000){
   #' uses difference metric idea to check independence of X-u and Z, thus checking
   #' the suitability of qu as a threshold quantile
   #'
