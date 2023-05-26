@@ -47,6 +47,12 @@ energy.thrsh.test = function(data, qt.range, n.boot, n.boot.par, n.rep){
       beta.mean = mean(sapply(par.boot$theta, '[[', 2))
       res = (rand.Y[rand.X>u] - alpha.mean*exs) / exs^beta.mean
 
+      # transform margins
+      q.exs = cdf(exs);q.exs[q.exs==1] = 1-1e-10;q.exs[q.exs==0] = 1e-10
+      q.res = cdf(res);q.res[q.res==1] = 1-1e-10;q.res[q.res==0] = 1e-10
+      exs = qexp(q.exs)
+      res = qexp(q.res)
+
       # do independence energy-test
       test = indep.test(exs, res, R=1000)
       pvs[j, i] = test$p.value
@@ -56,7 +62,7 @@ energy.thrsh.test = function(data, qt.range, n.boot, n.boot.par, n.rep){
   mean.pvs = apply(pvs, 2, mean)
 
   # plot mean p values
-  plot(rev(1-qt.range), rev(mean.pvs), main=paste(alpha), pch=2, col="red",
+  plot(rev(1-qt.range), rev(mean.pvs), pch=2, col="red",
        ylim=c(min(pvs), max(pvs)), xlab="qt", ylab="p-values")
 
   # plot all p values
