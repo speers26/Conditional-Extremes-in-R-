@@ -11,6 +11,8 @@ rfrechet <- evd::rfrechet
 # functions ---------------------------------------------------------------
 
 energy.thrsh.test = function(data, qt.range, n.boot, n.boot.par, n.rep){
+  #' Energy independence test for threshold selection
+  #'
   #' conducts test of independence based on that of Wan (2019) to validate H&T
   #' exceedance quantiles
   #' @param data matrix of 2 columns containing to fit HT to
@@ -72,6 +74,8 @@ energy.thrsh.test = function(data, qt.range, n.boot, n.boot.par, n.rep){
 }
 
 tval.thrsh.test = function(sample, qrange, theta0, sig=0.05, k_min=10){
+  #' T metric independence test for threshold selection
+  #'
   #' uses difference metric idea to check independence of X-u and Z, thus checking
   #' the suitability of qu as a threshold quantile
   #' does this for a range of quantiles, using an adaptive number of bands at each
@@ -121,6 +125,8 @@ tval.thrsh.test = function(sample, qrange, theta0, sig=0.05, k_min=10){
 
 
 indv.thrsh.test = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5, nr=1000){
+  #' T value indepedence test for individual threshold
+  #'
   #' uses difference metric idea to check independence of X-u and Z, thus checking
   #' the suitability of qu as a threshold quantile
   #'

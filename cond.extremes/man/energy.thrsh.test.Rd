@@ -2,8 +2,7 @@
 % Please edit documentation in R/thresh_select.R
 \name{energy.thrsh.test}
 \alias{energy.thrsh.test}
-\title{conducts test of independence based on that of Wan (2019) to validate H&T
-exceedance quantiles}
+\title{Energy independence test for threshold selection}
 \usage{
 energy.thrsh.test(data, qt.range, n.boot, n.boot.par, n.rep)
 }

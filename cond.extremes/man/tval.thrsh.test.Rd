@@ -2,10 +2,7 @@
 % Please edit documentation in R/thresh_select.R
 \name{tval.thrsh.test}
 \alias{tval.thrsh.test}
-\title{uses difference metric idea to check independence of X-u and Z, thus checking
-the suitability of qu as a threshold quantile
-does this for a range of quantiles, using an adaptive number of bands at each
-stage}
+\title{T metric independence test for threshold selection}
 \usage{
 tval.thrsh.test(sample, qrange, theta0, sig = 0.05, k_min = 10)
 }

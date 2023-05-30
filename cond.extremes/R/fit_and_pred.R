@@ -12,8 +12,11 @@ rfrechet <- evd::rfrechet
 # functions ---------------------------------------------------------------
 
 
-ht_pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
-  #' generates prediction points for a given H&T model
+ht.pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
+  #' Prediction for conditional extremes
+  #'
+  #' generates prediction points for a given H&T model, with options to plot and/or
+  #' output prediction points
   #'
   #' @param v float, value of conditioned variable to predict above
   #' @param theta vector, pars from H&T fit to use in prediction
@@ -48,7 +51,9 @@ ht_pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
   }
 }
 
-ht_fit = function(Yi, Ymnsi, qu, Y=T, keef=F, theta0, plot=T){
+ht.fit = function(Yi, Ymnsi, qu, Y=T, keef=F, theta0, plot=T){
+  #' Fitting for conditional extremes
+  #'
   #' fits the H&T (2004) model using Keef's (2013) constraints by optimising
   #' for alpha first, then beta
   #'
@@ -90,6 +95,8 @@ ht_fit = function(Yi, Ymnsi, qu, Y=T, keef=F, theta0, plot=T){
 }
 
 ht.par.boot = function(data, q, n.boot){
+  #' Bootstrapped HT parameter estimation
+  #'
   #' performs parametric bootstrap for ht (2004) model with keef (2013) constraints
   #'
   #' @param data 2 column matrix, data to fit initial model to

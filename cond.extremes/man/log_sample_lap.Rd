@@ -2,8 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{log_sample_lap}
 \alias{log_sample_lap}
-\title{function which generates a bivariate sample with MEVD logistic dependence
-structure and laplace margins}
+\title{MEVT sample with laplace margins generation}
 \usage{
 log_sample_lap(sample_n, alpha)
 }

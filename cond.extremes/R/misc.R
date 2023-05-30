@@ -12,6 +12,8 @@ rfrechet <- evd::rfrechet
 
 
 log_sample_lap <- function(sample_n,alpha){
+  #' MEVT sample with laplace margins generation
+  #'
   #' function which generates a bivariate sample with MEVD logistic dependence
   #' structure and laplace margins
   #'
@@ -26,7 +28,9 @@ log_sample_lap <- function(sample_n,alpha){
 }
 
 
-spliced_dist_est = function(x0, x, u, gpd_par){
+pspliced = function(x0, x, u, gpd_par){
+  #' Distribution function for GPD spliced with empirical
+  #'
   #' spliced distribution which uses empirical cdf for below threshold and gpd
   #' for above
   #'
@@ -49,7 +53,9 @@ spliced_dist_est = function(x0, x, u, gpd_par){
 }
 
 
-q_spliced_dist_est = function(p, x, q, gpd_par){
+qspliced = function(p, x, q, gpd_par){
+  #' Quantile function for GPD spliced with empirical
+  #'
   #' spliced inverse distribution which uses empirical cdf for below threshold
   #' and gpd for above
   #'

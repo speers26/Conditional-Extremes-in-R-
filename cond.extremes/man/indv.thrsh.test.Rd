@@ -2,8 +2,7 @@
 % Please edit documentation in R/thresh_select.R
 \name{indv.thrsh.test}
 \alias{indv.thrsh.test}
-\title{uses difference metric idea to check independence of X-u and Z, thus checking
-the suitability of qu as a threshold quantile}
+\title{T value indepedence test for individual threshold}
 \usage{
 indv.thrsh.test(
   sample,
