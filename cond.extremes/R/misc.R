@@ -45,7 +45,7 @@ pspliced = function(x0, x, u, gpd_par){
     return(sum(x<=x0)/length(x))
   }
   else{
-    p_exceed = 1 - spliced_dist_est(u, x, u, gpd_par)
+    p_exceed = 1 - pspliced(u, x, u, gpd_par)
     excess = x0 - u
     gpd_surv = evd::pgpd(excess, scale=gpd_par[1], shape=gpd_par[2], lower.tail=F)
     return(1 - (gpd_surv * p_exceed))
