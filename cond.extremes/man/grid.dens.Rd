@@ -4,7 +4,7 @@
 \alias{grid.dens}
 \title{Gridded density estimate using H&T for extremes}
 \usage{
-grid.dens(data, q.marginal, q.cond, xlim, nx, ny)
+grid.dens(data, q.marginal, q.cond, xlim, ylim, nx, ny)
 }
 \arguments{
 \item{data}{matrix of data in original margins}
@@ -14,6 +14,8 @@ grid.dens(data, q.marginal, q.cond, xlim, nx, ny)
 \item{q.cond}{threshold exceedance quantile to use for conditional model}
 
 \item{xlim}{x limits}
+
+\item{ylim}{y limits}
 
 \item{nx}{number of division points for xgrid}
 

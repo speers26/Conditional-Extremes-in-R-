@@ -46,7 +46,7 @@ ht.pred.cnstr <- function(v, theta, Z, n_pred, dx, Y=T, points=F, plot=T){
   }
 }
 
-grid.dens = function(data, q.marginal, q.cond, xlim, nx, ny){
+grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny){
   #' Gridded density estimate using H&T for extremes
   #'
   #' @description
@@ -60,6 +60,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, nx, ny){
   #' @param q.marginal threshold exceedance quantile to use for margins
   #' @param q.cond threshold exceedance quantile to use for conditional model
   #' @param xlim x limits
+  #' @param ylim y limits
   #' @param nx number of division points for xgrid
   #' @param ny number of division points for ygrid
   #'
@@ -96,12 +97,12 @@ grid.dens = function(data, q.marginal, q.cond, xlim, nx, ny){
   x.div = seq(x.min, x.max, dx)
   x.mid = min(x.div[x.div>x.u.cond])
 
-  y.min = min(y) - 1e-3
-  y.max = max(y) + 1e-3
+  y.min = min(ylim)
+  y.max = max(ylim)
   dy = (y.max-y.min)/ny
   y.div = seq(y.min, y.max, dy)
 
-  plot(x, y, pch=16, cex=0.5, xlim=xlim)
+  plot(x, y, pch=16, cex=0.5, xlim=xlim, ylim=ylim)
   abline(v=x.div, col="lightgrey", lty="dashed")
   abline(v=x.mid, col="blue", lty="dashed")
   abline(h=y.div,col="lightgrey", lty="dashed")
@@ -125,13 +126,6 @@ grid.dens = function(data, q.marginal, q.cond, xlim, nx, ny){
   y.div.l = qlaplace(as.numeric(as.vector(lapply(y.div, pspliced, x=y, u=y.u, gpd_par=y.fit$mle))))
   x.div.l = qlaplace(as.numeric(as.vector(lapply(x.div, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
 
-  y.points.l = qlaplace(as.numeric(as.vector(lapply(y.points, pspliced, x=y, u=y.u, gpd_par=y.fit$mle))))
-  x.points.l.lower = qlaplace(as.numeric(as.vector(lapply(x.points.lower, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
-  x.points.l.upper = qlaplace(as.numeric(as.vector(lapply(x.points.upper, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
-
-  xy.grid.l.upper = expand.grid(x.points.l.upper, y.points.l)
-  xy.grid.l.lower = expand.grid(x.points.l.lower, y.points.l)
-
   x.mid.l = qlaplace(as.numeric(as.vector(lapply(x.mid, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
 
   # fix infs in laplace grid spacing ----------------------------------------
@@ -151,6 +145,16 @@ grid.dens = function(data, q.marginal, q.cond, xlim, nx, ny){
 
   y.div.l[1:y.ninf.l] = y.div.l[y.ninf.l+1] - y.ninf.l:1 * y.mdiff
   #y.div.l[ny - y.ninf.u + 1:ny] = y.div.l[ny - y.ninf.u] + 1:y.ninf.u * y.mdiff
+
+  # get laplace points ------------------------------------------------------
+
+  y.points.l = y.div.l[-length(y.div.l)] + diff(y.div.l)/2
+  x.points.l.lower = qlaplace(as.numeric(as.vector(lapply(x.points.lower, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
+  x.points.l.upper = qlaplace(as.numeric(as.vector(lapply(x.points.upper, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
+
+  xy.grid.l.upper = expand.grid(x.points.l.upper, y.points.l)
+  xy.grid.l.lower = expand.grid(x.points.l.lower, y.points.l)
+
 
   # plotting laplace grid ---------------------------------------------------
 
@@ -173,7 +177,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, nx, ny){
 
   # doing for whole grid
   probs.upper = apply(as.matrix(xy.grid.l.upper), 1, box_prob, fit = fit, x_div = x.div.l, y_div = y.div.l)
-  #probs.upper = probs_upper/sum(probs_upper)*0.5*exp(-hs_mid_l) # quick fix for inconsistencies
+  # probs.upper = probs.upper/sum(probs.upper)*0.5*exp(-x.mid.l) # quick fix for inconsistencies
 
   # plot all probabilities --------------------------------------------------
   probs.spliced = c(probs.lower, probs.upper)
