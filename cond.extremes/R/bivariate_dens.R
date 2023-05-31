@@ -158,7 +158,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, nx, ny){
   abline(v=x.div.l, col="lightgrey", lty="dashed")
   abline(h=y.div.l, col="lightgrey", lty="dashed")
   # points(xy.grid.l.lower, pch=4, col="red", cex=0.3)
-  # points(xy.grid.l.upper, pch=4, col="green", cex=0.3)
+  points(xy.grid.l.upper, pch=4, col="green", cex=0.3)
   abline(v=x.mid.l, col="blue", lty="dashed")
 
   # get lower ps ------------------------------------------------------------
