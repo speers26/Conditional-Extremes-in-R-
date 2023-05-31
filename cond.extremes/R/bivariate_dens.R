@@ -128,51 +128,33 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny){
 
   x.mid.l = qlaplace(as.numeric(as.vector(lapply(x.mid, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
 
-  # fix infs in laplace grid spacing ----------------------------------------
-
-  x.div.l.finite = x.div.l[is.finite(x.div.l)]
-  x.ninf.l = length(x.div.l[is.infinite(x.div.l) & x.div.l < 0])
-  x.ninf.u = length(x.div.l[is.infinite(x.div.l) & x.div.l > 0])
-  x.mdiff = mean(diff(x.div.l.finite))
-
-  if (x.ninf.l){
-    x.div.l[1:x.ninf.l] = x.div.l[x.ninf.l+1] - x.ninf.l:1 * x.mdiff
-  }
-  if (x.ninf.u){
-    x.div.l[(length(x.div.l) - x.ninf.u + 1):length(x.div.l)] =
-      x.div.l[length(x.div.l) - x.ninf.u] + 1:x.ninf.u * x.mdiff
-  }
-
-  y.div.l.finite = y.div.l[is.finite(y.div.l)]
-  y.ninf.l = length(y.div.l[is.infinite(y.div.l) & y.div.l < 0])
-  y.ninf.u = length(y.div.l[is.infinite(y.div.l) & y.div.l > 0])
-  y.mdiff = mean(diff(y.div.l.finite))
-
-  if (y.ninf.l){
-    y.div.l[1:y.ninf.l] = y.div.l[y.ninf.l+1] - y.ninf.l:1 * y.mdiff
-  }
-  if (y.ninf.u){
-    y.div.l[(length(y.div.l) - y.ninf.u + 1):length(y.div.l)] =
-      y.div.l[length(y.div.l) - y.ninf.u] + 1:y.ninf.u * y.mdiff
-  }
-
   # get laplace points ------------------------------------------------------
 
-  x.div.l.lower = x.div.l[x.div.l<x.mid.l]
-  x.div.l.upper = x.div.l[x.div.l>=x.mid.l]
+  y.points.l = qlaplace(as.numeric(as.vector(lapply(y.points, pspliced, x=y, u=y.u, gpd_par=y.fit$mle))))
+  x.points.l.lower = qlaplace(as.numeric(as.vector(lapply(x.points.lower, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
+  x.points.l.upper = qlaplace(as.numeric(as.vector(lapply(x.points.upper, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
 
-  y.points.l = y.div.l[-length(y.div.l)] + diff(y.div.l)/2
-
-  x.points.l.lower = x.div.l.lower[-length(x.div.l.lower)] + diff(x.div.l.lower)/2
-  x.points.l.upper = x.div.l.upper[-length(x.div.l.upper)] + diff(x.div.l.upper)/2
+  y.points.l[is.infinite(y.points.l) & y.points.l > 0] = 1e10
+  y.points.l[is.infinite(y.points.l) & y.points.l < 0] = -1e10
+  x.points.l.lower[is.infinite(x.points.l.lower) & x.points.l.lower > 0] = 1e10
+  x.points.l.lower[is.infinite(x.points.l.lower) & x.points.l.lower < 0] = -1e10
+  x.points.l.upper[is.infinite(x.points.l.upper) & x.points.l.upper > 0] = 1e10
+  x.points.l.upper[is.infinite(x.points.l.upper) & x.points.l.upper < 0] = -1e10
 
   xy.grid.l.upper = expand.grid(x.points.l.upper, y.points.l)
   xy.grid.l.lower = expand.grid(x.points.l.lower, y.points.l)
 
+  # fix infs in laplace grid ------------------------------------------------
+
+  x.div.l[is.infinite(x.div.l) & x.div.l > 0] = 2e10
+  x.div.l[is.infinite(x.div.l) & x.div.l < 0] = -2e10
+  y.div.l[is.infinite(y.div.l) & y.div.l > 0] = 2e10
+  y.div.l[is.infinite(y.div.l) & y.div.l < 0] = -2e10
 
   # plotting laplace grid ---------------------------------------------------
 
-  plot(x.l, y.l, cex=0.5, xlim=c(min(x.div.l)-2, max(x.div.l)+2), ylim=c(min(y.div.l)-2, max(y.div.l)+2), pch=16)
+  plot(x.l, y.l, cex=0.5, xlim=c(min(x.div.l[x.div.l>-1e10])-2, max(x.div.l[x.div.l<1e10])+2),
+       ylim=c(min(y.div.l[y.div.l>-1e10])-2, max(y.div.l[y.div.l<1e10])+2), pch=16)
   abline(v=x.div.l, col="lightgrey", lty="dashed")
   abline(h=y.div.l, col="lightgrey", lty="dashed")
   # points(xy.grid.l.lower, pch=4, col="red", cex=0.3)
