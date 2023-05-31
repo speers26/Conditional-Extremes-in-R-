@@ -16,4 +16,5 @@ Depends:
 	docstring,
 	rlist,
 	ismev,
-	energy
+	energy,
+	ggplot2
