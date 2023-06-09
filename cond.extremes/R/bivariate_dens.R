@@ -46,7 +46,7 @@ ht.pred.cnstr <- function(v, theta, Z, n_pred, dx, Y=T, points=F, plot=T){
   }
 }
 
-grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny){
+grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny, log=T){
   #' Gridded density estimate using H&T for extremes
   #'
   #' @description
@@ -63,6 +63,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny){
   #' @param ylim y limits
   #' @param nx number of division points for xgrid
   #' @param ny number of division points for ygrid
+  #' @param log set to true to plot log of density
   #'
   #' @returns dataframe of densities and probabilities
   #' @export
@@ -185,7 +186,13 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny){
     dens = probs.spliced/(dx*dy)
   )
 
-  plot = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=log(dens))) #+ scale_fill_gradient(trans="log") # + geom_point(aes(colour=log(z)))
+  if(log){
+    plot = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=log(dens)))
+  }
+  else{
+    plot = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=(dens)))
+  }
+
   print(plot)
 
   return(probs.df)
