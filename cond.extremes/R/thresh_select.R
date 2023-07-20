@@ -195,7 +195,7 @@ get_X_and_Z = function(sample, qu, theta0){
   #'@keywords internal
   sample_x = sample[,1] ; sample_y = sample[,2]
 
-  qu_fit = ht_fit(sample_x, sample_y, qu, keef=T, theta0=theta0, plot=F)
+  qu_fit = ht.fit(sample_x, sample_y, qu, keef=T, theta0=theta0, plot=F)
 
   u = quantile(sample_x, qu)
   excess_x = sample_x[sample_x>=u] - u
