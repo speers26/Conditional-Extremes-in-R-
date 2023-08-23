@@ -259,11 +259,13 @@ get_t = function(cdfs){
 
   max_diffs = c()
   n_bands = length(cdfs)
-
+  
   for (i in 1:n_bands){
     diffs = c()
     for (j in 1:n_bands){
-      diffs[j] = mean(abs(cdfs[[i]] - cdfs[[j]]))
+      if(i!=j){
+        diffs = c(diffs, mean(abs(cdfs[[i]] - cdfs[[j]])))
+      }
     }
     max_diffs[i] = mean(diffs)
 
