@@ -241,10 +241,12 @@ get_ecdfs = function(bands){
   #'@keywords internal
   n_bands = length(bands)
   
-  emp_cdfs = list(knots(ecdf(bands[[1]])))
+  cdf1 = ecdf(bands[[1]])
+  emp_cdfs = list(knots(cdf1))
 
   for (i in 2:n_bands){
-    emp_cdfs = list.append(emp_cdfs, knots(ecdf(bands[[i]])))
+    cdf2 = ecdf(bands[[i]])
+    emp_cdfs = list.append(emp_cdfs, knots(cdf2))
   }
 
   return(emp_cdfs)
@@ -261,9 +263,9 @@ get_t = function(cdfs){
   for (i in 1:n_bands){
     diffs = c()
     for (j in 1:n_bands){
-      diffs[j] = max(abs(cdfs[[i]] - cdfs[[j]]))
+      diffs[j] = mean(abs(cdfs[[i]] - cdfs[[j]]))
     }
-    max_diffs[i] = max(diffs)
+    max_diffs[i] = mean(diffs)
 
   }
 
