@@ -123,7 +123,6 @@ tval.thrsh.test = function(sample, qrange, theta0, sig=0.05, k_min=10){
 
 }
 
-
 indv.thrsh.test = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5, nr=1000){
   #' T value indepedence test for individual threshold
   #'
@@ -213,7 +212,7 @@ get_X_and_Z = function(sample, qu, theta0){
 }
 
 get_bands = function(sample, n_bands){
-  #' split Y into given number of bands by X values and plots bands
+  #' split Y into given number of bands by X values
   #'@keywords internal
   X = sample[,1] ; Y = sample[,2]
 
@@ -241,7 +240,7 @@ get_ecdfs = function(bands){
   #' get ecdfs given bands
   #'@keywords internal
   n_bands = length(bands)
-
+  
   emp_cdfs = list(knots(ecdf(bands[[1]])))
 
   for (i in 2:n_bands){
