@@ -254,10 +254,10 @@ get_ecdfs = function(bands){
 }
 
 get_t = function(cdfs){
-  #' get test statistic t from quantiles and all residuals
+  #' get test statistic t from cdfs and all residuals
   #'@keywords internal
 
-  max_diffs = c()
+  mean_diffs = c()
   n_bands = length(cdfs)
   
   for (i in 1:n_bands){
@@ -267,11 +267,11 @@ get_t = function(cdfs){
         diffs = c(diffs, mean(abs(cdfs[[i]] - cdfs[[j]])))
       }
     }
-    max_diffs[i] = mean(diffs)
+    mean_diffs[i] = mean(diffs)
 
   }
 
-  t = max(max_diffs)
+  t = max(mean_diffs)
 
   return(t)
 
