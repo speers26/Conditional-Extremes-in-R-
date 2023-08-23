@@ -110,15 +110,16 @@ ht.par.boot = function(data, q, n.boot){
   # fit initial model
   fit.init = ht.fit(data[,1], data[,2], q, keef=T, plot=F, theta0=c(0,0,1))
   # set up empty par vectrs
-  theta = list(); res = list()
+  theta = list(); res = list(); X = list(); Y = list()
   for (i in 1:n.boot){
     # predict points from initial fit
     ht.pred = ht.pred(u, theta=fit.init$theta, Z=fit.init$res, plot=F, points=T, n_pred=n.pred)
     # fit to predicted points
     fit.itr = ht.fit(ht.pred[,1], ht.pred[,2], 0, theta0=c(0,0,1), plot=F)
     theta[[i]] = fit.itr$theta ; res[[i]] = fit.itr$res
+    X[[i]] = ht.pred[,1] ; Y[[i]] = ht.pred[,2]
   }
-  return(list(theta=theta, res=res))
+  return(list(theta=theta, res=res, X=X, Y=Y))
 }
 
 
