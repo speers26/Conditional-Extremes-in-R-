@@ -2,11 +2,11 @@
 % Please edit documentation in R/thresh_select.R
 \name{get_t}
 \alias{get_t}
-\title{get test statistic t from quantiles and all residuals}
+\title{get test statistic t from cdfs and all residuals}
 \usage{
 get_t(cdfs)
 }
 \description{
-get test statistic t from quantiles and all residuals
+get test statistic t from cdfs and all residuals
 }
 \keyword{internal}

@@ -2,11 +2,11 @@
 % Please edit documentation in R/thresh_select.R
 \name{get_bands}
 \alias{get_bands}
-\title{split Y into given number of bands by X values and plots bands}
+\title{split Y into given number of bands by X values}
 \usage{
 get_bands(sample, n_bands)
 }
 \description{
-split Y into given number of bands by X values and plots bands
+split Y into given number of bands by X values
 }
 \keyword{internal}

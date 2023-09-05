@@ -4,7 +4,7 @@
 \alias{grid.dens}
 \title{Gridded density estimate using H&T for extremes}
 \usage{
-grid.dens(data, q.marginal, q.cond, xlim, ylim, nx, ny, log = T)
+grid.dens(data, q.marginal, q.cond, xlim, ylim, nx, ny, log = T, adjust = 0)
 }
 \arguments{
 \item{data}{matrix of data in original margins}
@@ -22,6 +22,8 @@ grid.dens(data, q.marginal, q.cond, xlim, ylim, nx, ny, log = T)
 \item{ny}{number of division points for ygrid}
 
 \item{log}{set to true to plot log of density}
+
+\item{adjust}{inflation factor for residual noise sd, defaults to 0}
 }
 \value{
 dataframe of densities and probabilities

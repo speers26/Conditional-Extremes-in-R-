@@ -2,7 +2,8 @@
 # Script containing functions for estimating bivariate densities using H&T (2004)
 #
 
-ht.pred.cnstr <- function(v, theta, Z, n_pred, dx, Y=T, points=F, plot=T){
+ht.pred.cnstr <- function(v, theta, Z, n_pred, dx, Y=T, points=F,
+                          plot=T, adjust=0){
   #' Predicting HT points within set xrange
   #'
   #' Prediction of points using the ht(2004) model within a set range of x values
@@ -15,6 +16,7 @@ ht.pred.cnstr <- function(v, theta, Z, n_pred, dx, Y=T, points=F, plot=T){
   #' @param Y true if doing Y|X, false if doing X|Y
   #' @param points true to return prediction points in a matrix
   #' @param plot true to plot predicted points
+  #' @param adjust inflation factor for residual noise sd, defaults to 0
   #' @returns matrix of predicted points
   #' @export
 
@@ -29,8 +31,7 @@ ht.pred.cnstr <- function(v, theta, Z, n_pred, dx, Y=T, points=F, plot=T){
   rand_z <- sample(Z, n_pred, replace=T)
 
   bw = density(Z)$bw
-  adjust = 0
-  rand_z = rand_z + rnorm(length(rand_z), mean=0, sd= adjust*bw)
+  rand_z = rand_z + rnorm(length(rand_z), mean=0, sd=adjust*bw)
 
   prdctd_ymnsi <- rand_yi * alpha + rand_yi^beta * rand_z
 
@@ -46,7 +47,8 @@ ht.pred.cnstr <- function(v, theta, Z, n_pred, dx, Y=T, points=F, plot=T){
   }
 }
 
-grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny, log=T){
+grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
+                     log=T, adjust=0){
   #' Gridded density estimate using H&T for extremes
   #'
   #' @description
@@ -64,6 +66,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny, log=T){
   #' @param nx number of division points for xgrid
   #' @param ny number of division points for ygrid
   #' @param log set to true to plot log of density
+  #' @param adjust inflation factor for residual noise sd, defaults to 0
   #'
   #' @returns dataframe of densities and probabilities
   #' @export
@@ -163,7 +166,8 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny, log=T){
   abline(v=x.mid.l, col="blue", lty="dashed")
 
   # get lower ps ------------------------------------------------------------
-  probs.lower = apply(as.matrix(xy.grid.lower), 1, emp_box_prob, data=data, x_div=x.div, y_div = y.div, x_mid_l = x.mid.l, x_mid = x.mid)
+  probs.lower = apply(as.matrix(xy.grid.lower), 1, emp_box_prob, data=data,
+                      x_div=x.div, y_div = y.div, x_mid_l = x.mid.l, x_mid = x.mid)
   #probs.lower = probs_lower/sum(probs_lower)*(1-0.5*exp(-hs_mid_l)) # quick fix for inconsistencies
 
   # get upper ps ------------------------------------------------------------
@@ -173,7 +177,8 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny, log=T){
   fit = ht.fit(x.l, y.l, q.cond, keef=T, theta0=theta0)
 
   # doing for whole grid
-  probs.upper = apply(as.matrix(xy.grid.l.upper), 1, box_prob, fit = fit, x_div = x.div.l, y_div = y.div.l)
+  probs.upper = apply(as.matrix(xy.grid.l.upper), 1, box_prob, fit = fit,
+                      x_div = x.div.l, y_div = y.div.l, adjust = adjust)
   # probs.upper = probs.upper/sum(probs.upper)*0.5*exp(-x.mid.l) # quick fix for inconsistencies
 
   # plot all probabilities --------------------------------------------------
@@ -201,7 +206,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny, log=T){
 
 # internal functions ------------------------------------------------------
 
-box_prob = function(point, fit, x_div, y_div){
+box_prob = function(point, fit, x_div, y_div, adjust=0){
   #' @keywords internal
   x_l = as.numeric(point[1])
   y_l = as.numeric(point[2])
@@ -215,9 +220,10 @@ box_prob = function(point, fit, x_div, y_div){
   dx = b_xu - b_xl
   v = b_xl
   m = 100000
-  pred_points = ht.pred.cnstr(v, fit$theta, fit$res, n_pred=m, dx=dx, points = T, plot=F)
+  pred_points = ht.pred.cnstr(v, fit$theta, fit$res, n_pred=m, dx=dx, points=T,
+                              plot=F, adjust=adjust)
 
-  cond_p_est = (1/2*exp(-b_xl)-1/2*exp(-b_xu)) * sum((b_xl<pred_points[,1] & pred_points[,1]<=b_xu)*(b_yl<pred_points[,2] & pred_points[,2]<=b_yu)) / m
+  cond_p_est = (1/2*exp(-b_xl)-1/2*exp(-b_xu)) * sum((b_xl<pred_points[,1] & pred_points[,1]<=b_xu) * (b_yl<pred_points[,2] & pred_points[,2]<=b_yu)) / m
 
   return(cond_p_est)
 
