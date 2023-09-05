@@ -4,7 +4,7 @@
 \alias{ht.pred.cnstr}
 \title{Predicting HT points within set xrange}
 \usage{
-ht.pred.cnstr(v, theta, Z, n_pred, dx, Y = T, points = F, plot = T)
+ht.pred.cnstr(v, theta, Z, n_pred, dx, Y = T, points = F, plot = T, adjust = 0)
 }
 \arguments{
 \item{v}{prediction threshold}
@@ -22,6 +22,8 @@ ht.pred.cnstr(v, theta, Z, n_pred, dx, Y = T, points = F, plot = T)
 \item{points}{true to return prediction points in a matrix}
 
 \item{plot}{true to plot predicted points}
+
+\item{adjust}{inflation factor for residual noise sd, defaults to 0}
 }
 \value{
 matrix of predicted points

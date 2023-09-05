@@ -123,7 +123,6 @@ tval.thrsh.test = function(sample, qrange, theta0, sig=0.05, k_min=10){
 
 }
 
-
 indv.thrsh.test = function(sample, qu, theta0, n_bands=5, sig=0.05, plots=T, k_min = 5, nr=1000){
   #' T value indepedence test for individual threshold
   #'
@@ -213,7 +212,7 @@ get_X_and_Z = function(sample, qu, theta0){
 }
 
 get_bands = function(sample, n_bands){
-  #' split Y into given number of bands by X values and plots bands
+  #' split Y into given number of bands by X values
   #'@keywords internal
   X = sample[,1] ; Y = sample[,2]
 
@@ -241,11 +240,13 @@ get_ecdfs = function(bands){
   #' get ecdfs given bands
   #'@keywords internal
   n_bands = length(bands)
-
-  emp_cdfs = list(knots(ecdf(bands[[1]])))
+  
+  cdf1 = ecdf(bands[[1]])
+  emp_cdfs = list(knots(cdf1))
 
   for (i in 2:n_bands){
-    emp_cdfs = list.append(emp_cdfs, knots(ecdf(bands[[i]])))
+    cdf2 = ecdf(bands[[i]])
+    emp_cdfs = list.append(emp_cdfs, knots(cdf2))
   }
 
   return(emp_cdfs)
@@ -253,22 +254,24 @@ get_ecdfs = function(bands){
 }
 
 get_t = function(cdfs){
-  #' get test statistic t from quantiles and all residuals
+  #' get test statistic t from cdfs and all residuals
   #'@keywords internal
 
-  max_diffs = c()
+  mean_diffs = c()
   n_bands = length(cdfs)
-
+  
   for (i in 1:n_bands){
     diffs = c()
     for (j in 1:n_bands){
-      diffs[j] = max(abs(cdfs[[i]] - cdfs[[j]]))
+      if(i!=j){
+        diffs = c(diffs, mean(abs(cdfs[[i]] - cdfs[[j]])))
+      }
     }
-    max_diffs[i] = max(diffs)
+    mean_diffs[i] = mean(diffs)
 
   }
 
-  t = max(max_diffs)
+  t = max(mean_diffs)
 
   return(t)
 
