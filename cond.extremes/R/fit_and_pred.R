@@ -33,9 +33,9 @@ ht.pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
   rand_yi <- v + rexp(n_pred)
   rand_z <- sample(Z, n_pred, replace=T)
 
-  bw = density(Z)$bw
-  adjust = 0.1
-  rand_z = rand_z + rnorm(length(rand_z), mean=0, sd= adjust*bw)
+  # bw = density(Z)$bw
+  # adjust = 0 # 0.1
+  # rand_z = rand_z + rnorm(length(rand_z), mean=0, sd= adjust*bw)
 
   prdctd_ymnsi <- rand_yi * alpha + rand_yi^beta * rand_z
 
