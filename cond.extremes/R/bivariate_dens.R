@@ -192,10 +192,12 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
   )
 
   if(log){
-    plot = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=log(dens)))
+    plot = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=log(dens))) +
+    scale_fill_gradientn(colours=c("white", "yellow", "orange", "red", "black")) 
   }
   else{
-    plot = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=(dens)))
+    plot = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=(dens))) +
+    scale_fill_gradientn(colours=c("white", "yellow", "orange", "red", "black")) 
   }
 
   print(plot)
