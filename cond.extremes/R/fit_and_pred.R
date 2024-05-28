@@ -12,7 +12,7 @@ rfrechet <- evd::rfrechet
 # functions ---------------------------------------------------------------
 
 
-ht.pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
+ht.pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, inds = F, col="darkred"){
   #' Prediction for conditional extremes
   #'
   #' generates prediction points for a given H&T model, with options to plot and/or
@@ -31,7 +31,8 @@ ht.pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
   alpha <- theta[1] ; beta <- theta[2]
 
   rand_yi <- v + rexp(n_pred)
-  rand_z <- sample(Z, n_pred, replace=T)
+  rand_z_in <- sample(1:length(Z), n_pred, replace=T)
+  rand_z <- Z[rand_z_in]
 
   # bw = density(Z)$bw
   # adjust = 0 # 0.1
@@ -46,9 +47,13 @@ ht.pred <- function(v, theta, Z, n_pred, Y=T, points=F, plot=T, col="darkred"){
       points(rand_yi,prdctd_ymnsi,col=col,pch=16,cex=0.5)}
   }
 
+  if(points && inds){
+    return(list(points=matrix(data=c(rand_yi, prdctd_ymnsi), ncol=2), z_inds = rand_z_in))
+  }
   if(points){
     return(matrix(data=c(rand_yi, prdctd_ymnsi), ncol=2))
   }
+
 }
 
 ht.fit = function(Yi, Ymnsi, qu, Y=T, keef=F, theta0, plot=T){
