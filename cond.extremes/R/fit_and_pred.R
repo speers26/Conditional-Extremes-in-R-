@@ -223,7 +223,7 @@ both_cases_check <- function(alpha, beta, yi, ymnsi, q){
   #' @returns boolean, true if case on is satisfied
   ## get quantiles
   # old constraints
-  if( alpha < -1 | alpha > 1 | beta < -1 | beta > 1){return(0)}
+  if( alpha < 0 | alpha > 1 | beta < 0 | beta > 1){return(0)}
 
   ## get quantiles
   z_pos <- ymnsi - yi
