@@ -4,7 +4,17 @@
 \alias{ht.pred}
 \title{Prediction for conditional extremes}
 \usage{
-ht.pred(v, theta, Z, n_pred, Y = T, points = F, plot = T, col = "darkred")
+ht.pred(
+  v,
+  theta,
+  Z,
+  n_pred,
+  Y = T,
+  points = F,
+  plot = T,
+  inds = F,
+  col = "darkred"
+)
 }
 \arguments{
 \item{v}{float, value of conditioned variable to predict above}
