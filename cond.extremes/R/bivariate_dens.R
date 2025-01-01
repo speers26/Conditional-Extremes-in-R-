@@ -77,7 +77,10 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
   x.fit = gpd.fit(x, x.u, show=F)
 
   y.u = as.numeric(quantile(y, q.marginal))
-  y.fit = gpd.fit(y, y.u, show=F)
+  y.fit = gpd.fit(y[x>7], y.u, show=T)
+
+  max_y = y.u - y.fit$mle[1]/y.fit$mle[2]
+  print(max_y)
 
   # change to Laplace margins
   x.l = qlaplace(as.numeric(as.vector(lapply(x, pspliced, x=x, u=x.u, gpd_par=x.fit$mle))))
@@ -87,7 +90,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
   y.l = y.l[is.finite((x.l))]
   x.l = x.l[is.finite((x.l))]
   x.l = x.l[is.finite(y.l)]
-  y.ls = y.l[is.finite(y.l)]
+  y.l = y.l[is.finite(y.l)]
 
 
   # form grid --------------------------------------------------------------
@@ -107,6 +110,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
   y.div = seq(y.min, y.max, dy)
 
   plot(x, y, pch=16, cex=0.5, xlim=xlim, ylim=ylim)
+
   abline(v=x.div, col="lightgrey", lty="dashed")
   abline(v=x.mid, col="blue", lty="dashed")
   abline(h=y.div,col="lightgrey", lty="dashed")
@@ -156,7 +160,6 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
   y.div.l[is.infinite(y.div.l) & y.div.l < 0] = -2e10
 
   # plotting laplace grid ---------------------------------------------------
-
   plot(x.l, y.l, cex=0.5, xlim=c(min(x.div.l[x.div.l>-1e10])-2, max(x.div.l[x.div.l<1e10])+2),
        ylim=c(min(y.div.l[y.div.l>-1e10])-2, max(y.div.l[y.div.l<1e10])+2), pch=16)
   abline(v=x.div.l, col="lightgrey", lty="dashed")
@@ -193,22 +196,22 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
 
   if(log){
     fig = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=log(dens))) +
-    scale_fill_gradientn(colours=c("white", "yellow", "orange", "red", "black"), na.value = "white") 
+    scale_fill_gradientn(colours=c("white", "yellow", "orange", "red", "black"), na.value = "white")
     fig = fig +
     ylim(layer_scales(fig)$y$range$range[1], layer_scales(fig)$y$range$range[2]) +
     theme_classic()
     fig = fig +
     scale_x_continuous(limits = xlim, expand = c(0, 0)) +
-    scale_y_continuous(limits = ylim, expand = c(0, 0))
+    scale_y_continuous(limits = c(0.01, 0.08), expand = c(0, 0)) + ylab("STP") + xlab("Hs")
   }
   else{
     fig = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=(dens))) +
-    scale_fill_gradientn(colours=c("white", "yellow", "orange", "red", "black"), na.value = "white") 
+    scale_fill_gradientn(colours=c("white", "yellow", "orange", "red", "black"), na.value = "white")
     fig = fig +
     ylim(layer_scales(fig)$y$range$range[1], layer_scales(fig)$y$range$range[2]) +
     theme_classic() +
     scale_x_continuous(limits = xlim, expand = c(0, 0)) +
-    scale_y_continuous(limits = ylim, expand = c(0, 0)) 
+    scale_y_continuous(limits = ylim, expand = c(0, 0))
   }
 
   print(fig)
