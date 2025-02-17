@@ -1,6 +1,6 @@
 library("devtools")
 
 .rs.restartR()
-setwd("~/GitHub/R_packages/cond.extremes")
+setwd("~/GitHub/Conditional-Extremes-in-R-/cond.extremes")
 devtools::document()
 devtools::install()
