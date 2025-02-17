@@ -7,6 +7,7 @@ prob_est = function(data, v, q.cond, npred=1e5){
   #' @param npred number of predictions to make in empirical probability estimation
   #' 
   #' @return the estimated probability of joint exceedance 
+  #' @export
   
   # fit conditional extremes models
   exp_sample = rexp(npred)
