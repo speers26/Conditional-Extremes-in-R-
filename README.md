@@ -6,4 +6,12 @@ and
 including implementation as described by 
 [Speers, M., Randell, D., Tawn, J. and Jonathan, P. (2024).](https://www.sciencedirect.com/science/article/pii/S0029801824020924).
 
-To install, 
+To install, please run the following R code:
+
+```
+install.packages("devtools")
+library(devtools)
+install_github("speers26/Conditional-Extremes-in-R-")
+
+```
+Please feel free to contact me at m.speers@lancaster.ac.uk if you have any questions or suggestions.
