@@ -223,6 +223,17 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
 # internal functions ------------------------------------------------------
 
 box_prob = function(point, fit, x_div, y_div, adjust=0){
+  #' Estimates the probability of a point being in a box using HT (2004)
+  #' 
+  #' Uses a fitted conditional extremes (HT, 2004) model to estimate the probability of 
+  #' lying within a box with given centre point
+  #' 
+  #' @param point the centre point of the box
+  #' @param fit the fitted conditional extremes model
+  #' @param x_div the division points for x
+  #' @param y_div the division points for y
+  #' @param adjust inflation factor for residual noise kernel smoothing sd, defaults to 0. Making this positive can reduce 'streak' effects in extrapolation
+  #' 
   #' @keywords internal
   x_l = as.numeric(point[1])
   y_l = as.numeric(point[2])
@@ -250,6 +261,14 @@ emp_box_prob = function(point, data, x_div, y_div, x_mid_l, x_mid){
   #'
   #' Takes the centre point of box and locations for division points, then calculates
   #' the proportion of points in those boxes
+  #' 
+  #' @param point the centre point of the box
+  #' @param data the data to be used
+  #' @param x_div the division points for x
+  #' @param y_div the division points for y
+  #' @param x_mid_l the box midpoitns for x on Laplace margins
+  #' @param x_mid the box midpoint for x on original margins
+  #' 
   #' @keywords internal
   x = as.numeric(point[1])
   y = as.numeric(point[2])
