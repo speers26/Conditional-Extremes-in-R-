@@ -9,6 +9,22 @@ dfrechet <- evd::dfrechet
 rfrechet <- evd::rfrechet
 
 # functions ---------------------------------------------------------------
+neglog_sample_lap = function (sample_n, alpha){
+  #' MEVT sample with laplace margins generation
+  #' 
+  #' function which generates a bivariate sample with MEVD inverted logistic dependence
+  #' structure and laplace margins
+  #' 
+  #' @param sample_n an integer, size of sample to be generated
+  #' @param alpha floating point in [0,1], MEVD inverted logistic dependence parameter
+  #' 
+  #' @returns vector, sample with laplace margins and inverted logistic dep structure
+  #' @export
+  sample <- rmvevd(sample_n, dep = alpha, d = 2, model = "log", 
+                   mar = c(1, 1, 1))
+  l_sample <- -qlaplace(evd::pfrechet(sample))
+  return(l_sample)
+}
 
 
 log_sample_lap <- function(sample_n,alpha){
