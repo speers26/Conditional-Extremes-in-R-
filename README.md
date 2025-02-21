@@ -6,4 +6,4 @@ and
 including implementation as described by 
 [Speers, M., Randell, D., Tawn, J. and Jonathan, P. (2024).](https://www.sciencedirect.com/science/article/pii/S0029801824020924).
 
-Includes code used for estimation of the joint density of environmental variables in [https://www.sciencedirect.com/science/article/pii/S0029801824020924]
+To install, 
