@@ -3,6 +3,7 @@
 export(bivariate_gaussian_laplace)
 export(grid.dens)
 export(ht.fit)
+export(ht.fitAlt)
 export(ht.par.boot)
 export(ht.pred)
 export(ht.pred.cnstr)
