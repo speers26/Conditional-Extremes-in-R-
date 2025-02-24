@@ -45,3 +45,60 @@ ht.fitAlt = function(Yi, Ymnsi, qu){
   return(list(theta = c(alpha_opt, beta_opt), res=res))
   
 }
+
+# internal functions ------------------------------------------------------
+equality1 = function(beta, Yi, Ymnsi, alpha, v){
+  #' first equality constraint for optimisation
+  #' @keywords internal
+  #' 
+  #' @param beta conditional extremes parameter
+  #' @param Yi the excesses of the conditioning variable
+  #' @param Ymnsi the excesses of the conditioned variable
+  #' @param alpha conditional extremes parameter
+  #' @param v a large value chosen as part of Keef(2013) constraints
+  #' 
+  #' @returns the value of the equality constraint
+  
+  z = zM(beta, Yi, Ymnsi, alpha)
+  
+  return(abs(1-alpha-beta*z*v^(beta-1)))
+  
+}
+
+equality2 = function(beta, Yi, Ymnsi, alpha, v){
+  #' second equality constraint for optimisation
+  #' @keywords internal
+  #' 
+  #' @param beta conditional extremes parameter
+  #' @param Yi the excesses of the conditioning variable
+  #' @param Ymnsi the excesses of the conditioned variable
+  #' @param alpha conditional extremes parameter
+  #' @param v a large value chosen as part of Keef(2013) constraints
+  #' 
+  #' @returns the value of the equality constraint
+  
+  z_AD = max(Ymnsi - Yi)
+  z_m = zM(beta, Yi, Ymnsi, alpha)
+  
+  return(abs(1- alpha +z_AD/v - v^(beta-1)*z_m))
+  
+}
+
+zM = function(beta, Yi, Ymnsi, alpha){
+  #' maximum value of the residuals, as a function of beta, for a given alpha
+  #' 
+  #' This is needed to optimise and find boundary of Keef(2013) parameter space
+  #' @keywords internal
+  #' 
+  #' @param beta conditional extremes parameter
+  #' @param Yi the excesses of the conditioning variable
+  #' @param Ymnsi the excesses of the conditioned variable
+  #' @param alpha conditional extremes parameter
+  #' 
+  #' @returns the maximum value of the residuals as a function of beta, given alpha
+  
+  residuals = (Ymnsi - alpha*Yi) / (Yi^beta)
+  
+  return(max(residuals))
+  
+}

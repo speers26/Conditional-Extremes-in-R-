@@ -4,7 +4,7 @@
 \alias{prob_est}
 \title{Probability estimation using the conditional extremes model}
 \usage{
-prob_est(data, v, q.cond, npred = 1e+05)
+prob_est(data, v, q.cond, npred = 1e+05, alt = FALSE)
 }
 \arguments{
 \item{data}{a matrix with two columns, the first being the x values and the second being the y values, on laplace margins}
@@ -14,6 +14,8 @@ prob_est(data, v, q.cond, npred = 1e+05)
 \item{q.cond}{vector of conditioning quantiles}
 
 \item{npred}{number of predictions to make in empirical probability estimation}
+
+\item{alt}{logical, if TRUE, the function will use the alternative method for estimating conditional extremes parameters}
 }
 \value{
 the estimated probability of joint exceedance
