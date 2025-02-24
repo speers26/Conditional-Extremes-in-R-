@@ -12,7 +12,7 @@ neglog_sample_lap(sample_n, alpha)
 \item{alpha}{floating point in \link{0,1}, MEVD inverted logistic dependence parameter}
 }
 \value{
-vector, sample with laplace margins and inverted logistic dep structure
+matrix, sample with laplace margins and inverted logistic dep structure
 }
 \description{
 function which generates a bivariate sample with MEVD inverted logistic dependence

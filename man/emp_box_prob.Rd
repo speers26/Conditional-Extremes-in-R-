@@ -6,6 +6,19 @@
 \usage{
 emp_box_prob(point, data, x_div, y_div, x_mid_l, x_mid)
 }
+\arguments{
+\item{point}{the centre point of the box}
+
+\item{data}{the data to be used}
+
+\item{x_div}{the division points for x}
+
+\item{y_div}{the division points for y}
+
+\item{x_mid_l}{the box midpoitns for x on Laplace margins}
+
+\item{x_mid}{the box midpoint for x on original margins}
+}
 \description{
 Takes the centre point of box and locations for division points, then calculates
 the proportion of points in those boxes
