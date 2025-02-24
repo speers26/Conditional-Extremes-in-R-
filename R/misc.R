@@ -9,6 +9,29 @@ dfrechet <- evd::dfrechet
 rfrechet <- evd::rfrechet
 
 # functions ---------------------------------------------------------------
+bivariate_gaussian_laplace = function(sample_n, rho){
+  #' Bivariate Gaussian with Laplace margins
+  #' 
+  #' function which generates a bivariate Gaussian sample with laplace margins
+  #' 
+  #' @param sample_n an integer, size of sample to be generated
+  #' @param rho float, correlation between the two variables
+  #' 
+  #' @returns matrix, sample with laplace margins and gaussian dependence structure
+  #' @export
+  
+  # simulate bivariate Gaussian data
+  mu = c(0, 0)
+  Sigma = matrix(c(1, rho, rho, 1), nrow = 2)
+  X = rmvnorm(n = sample_n, mean = mu, sigma = Sigma)
+  
+  # change to laplace margins
+  X = qlaplace(pnorm(X))
+  
+  return(X)
+  
+}
+
 neglog_sample_lap = function (sample_n, alpha){
   #' MEVT sample with laplace margins generation
   #' 
@@ -18,7 +41,7 @@ neglog_sample_lap = function (sample_n, alpha){
   #' @param sample_n an integer, size of sample to be generated
   #' @param alpha floating point in [0,1], MEVD inverted logistic dependence parameter
   #' 
-  #' @returns vector, sample with laplace margins and inverted logistic dep structure
+  #' @returns matrix, sample with laplace margins and inverted logistic dep structure
   #' @export
   sample <- rmvevd(sample_n, dep = alpha, d = 2, model = "log", 
                    mar = c(1, 1, 1))
@@ -27,7 +50,7 @@ neglog_sample_lap = function (sample_n, alpha){
 }
 
 
-log_sample_lap <- function(sample_n,alpha){
+log_sample_lap <- function(sample_n, alpha){
   #' MEVT sample with laplace margins generation
   #'
   #' function which generates a bivariate sample with MEVD logistic dependence
@@ -36,7 +59,7 @@ log_sample_lap <- function(sample_n,alpha){
   #' @param sample_n an integer, size of sample to be generated
   #' @param alpha floating point in [0,1], MEVD logistic dependence parameter
   #'
-  #' @returns vector, sample with laplace margins and logistic dep structure
+  #' @returns matrix, sample with laplace margins and logistic dep structure
   #' @export
   sample <- rmvevd(sample_n,dep = alpha,d=2,model="log",mar=c(1,1,1)) ## with unit frechet margins
   l_sample <- qlaplace(pfrechet(sample)) ## with laplace margins
