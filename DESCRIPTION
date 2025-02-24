@@ -16,4 +16,5 @@ Depends:
 	docstring,
 	rlist,
 	ismev,
-	ggplot2
+	ggplot2,
+	mvtnorm
