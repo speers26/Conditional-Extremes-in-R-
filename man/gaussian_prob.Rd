@@ -4,12 +4,12 @@
 \alias{gaussian_prob}
 \title{true probability of joint exceedance for a gaussian dependence structure}
 \usage{
-gaussian_prob(v, alpha)
+gaussian_prob(v, rho)
 }
 \arguments{
 \item{v}{the joint exceedance value on laplace margins}
 
-\item{alpha}{the dependence parameter}
+\item{rho}{the dependence parameter}
 }
 \value{
 the true probability of joint exceedance

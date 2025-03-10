@@ -87,10 +87,10 @@ logistic_prob = function(v, alpha){
     
 }
 
-gaussian_prob = function(v, alpha){
+gaussian_prob = function(v, rho){
   #' true probability of joint exceedance for a gaussian dependence structure
   #' 
-  #' @param alpha the dependence parameter
+  #' @param rho the dependence parameter
   #' @param v the joint exceedance value on laplace margins
   #' 
   #' @return the true probability of joint exceedance
@@ -98,7 +98,7 @@ gaussian_prob = function(v, alpha){
   
   v.gaussian = v %>% plaplace %>% qnorm
   
-  p = 1 - 2 * pnorm(v.gaussian) + pmvnorm(upper=c(v.gaussian, v.gaussian), mean=c(0,0), corr=matrix(data=c(1, 0.5, 0.5, 1), nrow=2))[[1]]
+  p = 1 - 2 * pnorm(v.gaussian) + pmvnorm(upper=c(v.gaussian, v.gaussian), mean=c(0,0), corr=matrix(data=c(1, rho, rho, 1), nrow=2))[[1]]
   
   return(p)
   

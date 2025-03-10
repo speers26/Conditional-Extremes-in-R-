@@ -17,4 +17,5 @@ Depends:
 	rlist,
 	ismev,
 	ggplot2,
-	mvtnorm
+	mvtnorm,
+	dplyr
