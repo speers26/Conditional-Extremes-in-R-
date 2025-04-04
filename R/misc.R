@@ -50,3 +50,34 @@ qspliced = function(p, x, q, gpd_par){
     return(u + gpd_quant)
   }
 }
+
+# function which speeds up and vectorises qspliced ------------------------
+qspliced_v_fast <- function(p, x, q, gpd_par) {  
+  #' Vectorised quantile function for GPD spliced with empirical
+  #' 
+  #' @author Wanchen Yue
+  #' @param p vector of probabilities between [0,1] for which to find the corresponding quantile
+  #' @param x vector of sample used to fit the distribution
+  #' @param q float between [0,1], exceedance quantile
+  #' @param gpd_par vector of gpd scale and shape parameters
+  #' 
+  #' @returns vector of quantiles, estimated pth quantile for data x with gpd tail
+  #' @export
+
+  # Precompute the threshold   
+  u <- quantile(x, q, names = FALSE)      
+  # Allocate output vector   out <- numeric(length(p))      
+  # Split indices based on threshold q   
+  below_q <- p <= q   
+  above_q <- !below_q      
+  # Empirical quantiles for p <= q   
+  out[below_q] <- quantile(x, p[below_q], names = FALSE)      
+  # GPD quantiles for p > q   
+  if (any(above_q)) {     
+    gpd_prob <- 1 - (1 - p[above_q]) / (1 - q)     
+    gpd_quant <- evd::qgpd(gpd_prob, scale = gpd_par[1], shape = gpd_par[2])     
+    out[above_q] <- u + gpd_quant
+    }      
+  return(out) 
+}
+
