@@ -77,7 +77,8 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
   x.fit = gpd.fit(x, x.u, show=F)
 
   y.u = as.numeric(quantile(y, q.marginal))
-  y.fit = gpd.fit(y[x>7], y.u, show=T)
+  # y.fit = gpd.fit(y[x>7], y.u, show=T)
+  y.fit = gpd.fit(y, y.u, show=T)
 
   max_y = y.u - y.fit$mle[1]/y.fit$mle[2]
   print(max_y)
