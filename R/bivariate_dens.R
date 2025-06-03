@@ -74,7 +74,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
   # fit and transform margins -----------------------------------------------
   x = data[,1] ; y = data[,2]
   x.u = as.numeric(quantile(x, q.marginal))
-  x.fit = gpd.fit(x, x.u, show=F)
+  x.fit = gpd.fit(x, x.u, show=T)
 
   y.u = as.numeric(quantile(y, q.marginal))
   # y.fit = gpd.fit(y[x>7], y.u, show=T)
@@ -203,7 +203,7 @@ grid.dens = function(data, q.marginal, q.cond, xlim, ylim, nx, ny,
     theme_classic()
     fig = fig +
     scale_x_continuous(limits = xlim, expand = c(0, 0)) +
-    scale_y_continuous(limits = c(0.01, 0.08), expand = c(0, 0)) + ylab("STP") + xlab("Hs")
+    scale_y_continuous(limits = ylim, expand = c(0, 0)) + ylab("STP") + xlab("Hs")
   }
   else{
     fig = ggplot(probs.df, aes(x, y)) + geom_raster(aes(fill=(dens))) +
